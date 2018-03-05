@@ -1,5 +1,8 @@
 import re
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 def clean_number(num_str):
     return num_str.replace(" ", "").replace(".", "").replace(",", "")
@@ -24,7 +27,7 @@ def normalize_match(number, decimal, magnitude):
 def prepare_regex():
     magnitude_shortcuts = "(?P<magnitude>(tys|mln|mld|mil))"
     magnitudes = f"({magnitude_shortcuts}\.?)?"
-    number = "(?P<number>([. ]?\d+)+)"
+    number = "(?P<number>([. ]*\d+)+)"
     decimal_part = "(,(?P<decimal>\d+))?"
     old = "(\(?\s*starych\s*\)?)?"
     numbers_as_words = "(\(.*\))?"
@@ -33,20 +36,31 @@ def prepare_regex():
     return re.compile(combined)
 
 
+def process_file(judgements_file):
+    results = []
+    pattern = prepare_regex()
+
+    for line in judgements_file:
+        res = pattern.search(line)
+        if res is not None:
+            numeric_match = res.group('number')
+            magnitude_match = res.group('magnitude')
+            decimal_match = res.group('decimal')
+            float_nr = normalize_match(numeric_match, decimal_match, magnitude_match)
+            if float_nr > 0.01:
+                results.append(float_nr)
+
+    return results
+
+
 root_dir = '/home/marcin/Desktop/SemestrVIII/PJN/lab1'
 tmp_path = f"{root_dir}/tmp/output.txt"
 output_file = open(tmp_path, 'r')
-pattern = prepare_regex()
-results = []
-
-for line in output_file:
-    res = pattern.search(line)
-    if res is not None:
-        match = res.groups()
-        numeric_match = res.group('number')
-        magnitude_match = res.group('magnitude')
-        decimal_match = res.group('decimal')
-        float_nr = normalize_match(numeric_match, decimal_match, magnitude_match)
-        results.append((match, line, float_nr))
-
-print(results)
+money_amounts = np.asarray(process_file(output_file))
+logbins = np.geomspace(money_amounts.min(), money_amounts.max(), 15)
+plt.hist(money_amounts, bins=logbins)
+plt.xscale('log')
+plt.title("Kwoty w wyrokach sądowych 2018")
+plt.xlabel("kwota [zł]")
+plt.ylabel("Częstotliwość")
+plt.show()
