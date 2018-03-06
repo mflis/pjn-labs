@@ -20,7 +20,7 @@ def prepare_regex():
         "szkodach",
         "szkody",
     ]
-    regex_pattern = f"({'|'.join(word_forms)})"
+    regex_pattern = f"\\b({'|'.join(word_forms)})\\b"
     return re.compile(regex_pattern, re.IGNORECASE)
 
 
