@@ -2,6 +2,7 @@ import re
 
 import matplotlib.pyplot as plt
 import numpy as np
+from filenames import *
 
 
 def clean_number(num_str):
@@ -53,9 +54,7 @@ def process_file(judgements_file):
     return results
 
 
-root_dir = '/home/marcin/Desktop/SemestrVIII/PJN/lab1'
-tmp_path = f"{root_dir}/tmp/output.txt"
-output_file = open(tmp_path, 'r')
+output_file = open(judgement_text_path, 'r')
 money_amounts = np.asarray(process_file(output_file))
 logbins = np.geomspace(money_amounts.min(), money_amounts.max(), 15)
 
