@@ -2,9 +2,12 @@ import re
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from filenames import *
 
 
+# uwzględnić PLN
+# ignore case
 def clean_number(num_str):
     return num_str.replace(" ", "").replace(".", "").replace(",", "")
 
