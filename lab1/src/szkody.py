@@ -3,10 +3,6 @@ import re
 from filenames import *
 
 
-# uwzględnić PLN
-# ignore case
-
-
 def prepare_regex():
     word_forms = [
         'szkoda',
@@ -25,19 +21,14 @@ def prepare_regex():
         "szkody",
     ]
     regex_pattern = f"({'|'.join(word_forms)})"
-    return re.compile(regex_pattern)
+    return re.compile(regex_pattern, re.IGNORECASE)
 
 
-def process_file(judgements_file):
-    results = 0
-    pattern = prepare_regex()
+judgements_file = open(judgement_text_path, 'r')
+results = 0
+pattern = prepare_regex()
 
-    for line in judgements_file:
-        results += bool(pattern.search(line))
+for line in judgements_file:
+    results += bool(pattern.search(line))
 
-    return results
-
-
-output_file = open(judgement_text_path, 'r')
-print(process_file(output_file))
-# najpierw zdefinowac skrtukture indeksu potem zaladowac dane, żeby dobrze zadizałałał
+print(f"nr of verdicts in 2018 with word `szkoda` or its variations are present: {results}")

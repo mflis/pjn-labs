@@ -35,9 +35,9 @@ def prepare_regex():
     decimal_part = "(,(?P<decimal>\d+))?"
     old = "(\(?\s*starych\s*\)?)?"
     numbers_as_words = "(\(.*\))?"
-    pln = "(zł)"
+    pln = "(zł|PLN)"
     combined = f"{number}{decimal_part}\s*{magnitudes}\s*{old}{numbers_as_words}\s*{pln}"
-    return re.compile(combined)
+    return re.compile(combined, re.IGNORECASE)
 
 
 def process_file(judgements_file):
@@ -45,47 +45,39 @@ def process_file(judgements_file):
     pattern = prepare_regex()
 
     for line in judgements_file:
-        res = pattern.search(line)
-        if res is not None:
-            numeric_match = res.group('number')
-            magnitude_match = res.group('magnitude')
-            decimal_match = res.group('decimal')
-            float_nr = normalize_match(numeric_match, decimal_match, magnitude_match)
-            if float_nr > 0.01:
-                results.append(float_nr)
+        process_line(line, pattern, results)
 
     return results
 
 
+def process_line(line, pattern, results):
+    for match_result in pattern.finditer(line):
+        numeric_match = match_result.group('number')
+        magnitude_match = match_result.group('magnitude')
+        decimal_match = match_result.group('decimal')
+        float_nr = normalize_match(numeric_match, decimal_match, magnitude_match)
+        if float_nr > 0.01:  # filer out 0 zł
+            results.append(float_nr)
+
+    return results
+
+
+def create_histogram(data, output_filename):
+    logbins = np.geomspace(data.min(), data.max(), 40)
+    plt.hist(data, bins=logbins, rwidth=0.9)
+    plt.xscale('log')
+    plt.xlabel("Amount of money [zł]")
+    plt.ylabel("Nr of occurences")
+    plt.savefig(output_filename)
+    plt.close()
+
+
 output_file = open(judgement_text_path, 'r')
+
 money_amounts = np.asarray(process_file(output_file))
-logbins = np.geomspace(money_amounts.min(), money_amounts.max(), 15)
-
-plt.hist(money_amounts, bins=logbins)
-plt.xscale('log')
-plt.title("Kwoty w wyrokach sądowych 2018")
-plt.xlabel("kwota [zł]")
-plt.ylabel("Częstotliwość")
-plt.savefig('kwoty-all.png')
-plt.close()
 lesser_amounts = money_amounts[money_amounts < 1000000]
-logbins_lesser = np.geomspace(lesser_amounts.min(), lesser_amounts.max(), 15)
-
 bigger_amounts = money_amounts[money_amounts >= 1000000]
-logbins_bigger = np.geomspace(bigger_amounts.min(), bigger_amounts.max(), 15)
 
-plt.hist(lesser_amounts, bins=logbins_lesser)
-plt.xscale('log')
-plt.title("Kwoty w wyrokach sądowych 2018 mniejsze niż 1 mln zł")
-plt.xlabel("kwota [zł]")
-plt.ylabel("Częstotliwość")
-plt.savefig('kwoty-lesser.png')
-plt.close()
-
-plt.hist(bigger_amounts, bins=logbins_bigger)
-plt.xscale('log')
-plt.title("Kwoty w wyrokach sądowych 2018 większe niż 1 mln zł")
-plt.xlabel("kwota [zł]")
-plt.ylabel("Częstotliwość")
-plt.savefig('kwoty-bigger.png')
-plt.close()
+create_histogram(money_amounts, '../plots/amounts-all.png')
+create_histogram(lesser_amounts, '../plots/amounts-lesser.png')
+create_histogram(bigger_amounts, '../plots/amounts-bigger.png')
