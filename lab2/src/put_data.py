@@ -21,14 +21,10 @@ client = Elasticsearch()
 
 json_files = os.listdir(json_data_dir)
 judgements_2018 = list(filter(lambda name: re.match('judgments-(316[3-9]|317\d)\.json', name), json_files))
-filename = judgements_2018[0]
 
 for filename in judgements_2018:
     with open(os.path.join(json_data_dir, filename), 'r') as jsonFile:
         judgements = json.load(jsonFile)['items']
     yearFiltered = filter(lambda item: "2018" in item['judgmentDate'], judgements)
-    projected_objects = list(map(prepare_json, yearFiltered))[:1]
-    bulk(client, projected_objects,
-         index='myindex',
-         doc_type='judgement',
-         )
+    projected_objects = list(map(prepare_json, yearFiltered))
+    bulk(client, projected_objects, index='myindex', doc_type='judgement')
