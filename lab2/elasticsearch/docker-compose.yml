@@ -1,0 +1,14 @@
+version: '2.0'
+services:
+  elasticsearch:
+    image: elasticsearch-morfologik
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./esvolume:/usr/share/elasticsearch/data
+    ports:
+    # 9300 - internal comunication
+    # 9200 - REST requests
+      - 9200:9200
+      - 9300:9300
