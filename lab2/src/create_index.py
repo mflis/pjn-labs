@@ -22,7 +22,7 @@ create_index_body = {
                 'textContent': {'type': 'text', 'analyzer': 'polish'},
                 'judgmentDate': {'type': 'date'},
                 'courtCases.caseNumber': {'type': 'keyword'},
-                'judges.name': {'type': 'text', 'analyzer': 'polish'},  ## maybe standard analyzer?
+                'judges.name': {'type': 'keyword'}
             }
         }
     }

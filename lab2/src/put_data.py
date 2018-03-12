@@ -5,6 +5,8 @@ import re
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
+from constants import *
+
 
 def prepare_json(judgement):
     return {
@@ -27,4 +29,4 @@ for filename in judgements_2018:
         judgements = json.load(jsonFile)['items']
     yearFiltered = filter(lambda item: "2018" in item['judgmentDate'], judgements)
     projected_objects = list(map(prepare_json, yearFiltered))
-    bulk(client, projected_objects, index='myindex', doc_type='judgement')
+    bulk(client, projected_objects, index=index_name, doc_type='judgement')
