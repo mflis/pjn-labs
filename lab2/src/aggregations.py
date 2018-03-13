@@ -1,3 +1,6 @@
+import os
+from os.path import dirname, abspath, join
+
 import matplotlib.pyplot as plt
 from elasticsearch import Elasticsearch
 
@@ -34,4 +37,5 @@ monthly_search = es.search(index=index_name, body=monthly_histogram)
 monthly_buckets = monthly_search['aggregations']['result']['buckets']
 hist = dict((x['key_as_string'], x['doc_count']) for x in monthly_buckets)
 plt.bar(list(hist.keys()), hist.values(), color='g')
-plt.show()
+parent_dir = join(dirname(abspath(__file__)), os.pardir)
+plt.savefig(f"{parent_dir}/histogram.png")

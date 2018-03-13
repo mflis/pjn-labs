@@ -49,7 +49,6 @@ es = Elasticsearch()
 es.indices.delete(index=index_name, ignore=[400, 404])
 es.indices.create(index=index_name, body=create_index_body)
 
-client = Elasticsearch()
 
 json_files = os.listdir(json_data_dir)
 judgements_2018 = list(filter(lambda name: re.match(filesInYearPattern, name), json_files))
@@ -59,4 +58,4 @@ for filename in judgements_2018:
         judgements = json.load(jsonFile)['items']
     yearFiltered = filter(lambda item: "2018" in item['judgmentDate'], judgements)
     projected_objects = list(map(prepare_json, yearFiltered))
-    bulk(client, projected_objects, index=index_name, doc_type='judgement')
+    bulk(es, projected_objects, index=index_name, doc_type='judgement')

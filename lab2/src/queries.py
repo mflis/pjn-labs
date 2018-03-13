@@ -3,7 +3,6 @@ from elasticsearch import Elasticsearch
 from constants import *
 
 es = Elasticsearch()
-
 szkoda_query = {
     "query": {
         "match": {
