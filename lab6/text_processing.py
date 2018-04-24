@@ -66,10 +66,10 @@ def clean_tagged(line):
     _id, text = line
     words = filter(lambda word: word not in common_tagged_words,
                    text.split(' '))
-    return Text(_id, words) 
+    return Text(_id,' '.join(words).split('uzasadnienie',1)[1]) 
 
 def tagged(categories_by_id):
-    lines = map(lambda l: Text._make(l.split(';')),
+    lines = map(lambda l: Text._make(l.split('; ')),
                 open(tagging_file, 'r'))
     int_id = map(lambda l: (int(l[0]),l[1]),lines)
     filtered = filter(lambda l: l[0] in categories_by_id, int_id)
