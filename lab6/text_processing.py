@@ -78,10 +78,24 @@ def tagged(categories_by_id):
         lambda text: Line(text.id, text.words, categories_by_id[text.id]),
         cleaned)
 
+mapping = {
+    'civil': [1,0,0,0],
+    'criminal': [0,1,0,0],
+    'economic': [0,0,1,0],
+    'insurance': [0,0,0,1],
+          }
+
 def get_train_test_data(listed_data): 
     data_x, data_y = zip(*listed_data)
-    data_x = np.array(data_x) 
+    data_y = list(map(lambda x: mapping[x],data_y))
+    data_x = np.expand_dims( np.array(data_x), axis=1)
     data_y = np.array(data_y) 
-    stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.25)
-    train_index, test_index= next(stratified_split.split(data_x,data_y))
-    return data_x[train_index], data_x[test_index], data_y[train_index], data_y[test_index]
+    stratified_split = StratifiedShuffleSplit(n_splits=2, test_size=0.25)
+
+    for train_index, test_index in stratified_split.split(data_x,data_y):
+        x_train, x_test = data_x[train_index], data_x[test_index]
+        y_train, y_test = data_y[train_index], data_y[test_index]
+    x_train = [x[0].strip() for x in x_train.tolist()]
+    x_test = [x[0].strip() for x in x_test.tolist()]
+
+    return x_train, x_test, y_train,y_test

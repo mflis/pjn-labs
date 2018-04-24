@@ -1,9 +1,9 @@
 import re
 
 root_dir = '/home/marcin/Desktop/SemestrVIII/PJN'
-year = "2018"
+year = "2017"
 json_data_dir = f"{root_dir}/data/json"
-tagging_file = 'tagging-2018.data'
+tagging_file = 'tagging-2017.data'
 
 
 patterns = {
@@ -30,4 +30,5 @@ common_tagged_words =['w:prep', 'z:prep', 'na:prep',
                      'on:ppron3', 'o:prep', 'rok:brev', 'sąd:subst',
                      'że:comp', 'koło:brev', 'praca:subst', 'ten:adj',
                      'artykuł:brev', 'się:qub', 'od:prep', 'rok:subst', 'przez:prep']
+
 
