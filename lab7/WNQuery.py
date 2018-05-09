@@ -24,7 +24,7 @@ class InvalidPOSException(Exception):
         return repr(self.message)
 
 # Constants for the Leacock-Chodorow similarity measure
-LeaCho_D = 20  # longest possible path from root to a node in WN
+LeaCho_D = 35  # longest possible path from root to a node in WN
 LeaCho_synonym = - math.log10(1.0 / (2.0 * LeaCho_D))  # similarity score for synonyms (maximum possible similarity value), equals to approx. 1.60206 when D=20
 LeaCho_noconnect = - 1.0  # similarity score for literals with no possible connecting path in WN (when similarity score is calculated with addArtificialTop = false option, see function header)
 
